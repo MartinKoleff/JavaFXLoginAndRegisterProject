@@ -1,23 +1,31 @@
 package sample;
 
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.application.Platform;
 import javafx.css.Match;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static sample.LoginController.*;
 import static sample.Main.loginStage;
-import static sample.LoginController.registerStage;
 //import static sample.LoginController.incorrectLogin;
 
 public class RegisterController {
@@ -36,6 +44,10 @@ public class RegisterController {
     private ImageView resultImage;
     @FXML
     private ImageView mainImage;
+    @FXML
+    private ToggleButton adminToggle;
+    @FXML
+    private Button registerButton;
 
     /**
      * Actions
@@ -46,49 +58,61 @@ public class RegisterController {
      */
     public void register() {
         Image image;
+        String imagePath;
         Map<String, String> accounts = DBConnector.getMap();
 
         //If account already exists with the same password
         if (accounts.containsKey(username.getText())) {
             if (accounts.get(username.getText()).equals(password.getText())) {
                 System.out.println("Account with that username and password already exists! Please try again with a different account!");
-                image = new Image("/pictures/meme4.jpg", mainImage.getFitWidth(), mainImage.getFitHeight(), false, true);
 
+                imagePath = "/pictures/meme4.jpg";
+                image = new Image(imagePath, mainImage.getFitWidth(), mainImage.getFitHeight(), false, true);
                 resultImage.setImage(image);
                 mainImage.setVisible(false);
                 resultImage.setVisible(true);
             }
         } else if (isValidUsername(username) && isValidPassword(password)) {//valid account
             System.out.println("Successfully registered!");
-            image = new Image("/pictures/meme1.jpg", mainImage.getFitWidth(), mainImage.getFitHeight(), false, true);
 
+            imagePath = "/pictures/meme1.jpg";
+            image = new Image(imagePath, mainImage.getFitWidth(), mainImage.getFitHeight(), false, true);
             resultImage.setImage(image);
-            mainImage.setVisible(false);
             resultImage.setVisible(true);
+            mainImage.setVisible(false);
 
-            DBConnector.registerUser(first_name.getText(), last_name.getText(), username.getText(), password.getText());
+            DBConnector.registerUser(adminToggle.isSelected(), first_name.getText(), last_name.getText(), username.getText(), password.getText());
 
-            //Delays the program closing for 3 seconds to see the success image!
-            delayProgram(3);
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            loginStage.show();
+                            registerStage.close();
+                        }
+                    });
+                }
+            });
 
-            loginStage.show();
+            //Delays the program!
+            thread.start();
+
         } else {
             System.out.println("Invalid account!");
-            image = new Image("/pictures/meme3.jpg", mainImage.getFitWidth(), mainImage.getFitHeight(), false, true);
 
+            imagePath = "/pictures/meme3.jpg";
+            image = new Image(imagePath, mainImage.getFitWidth(), mainImage.getFitHeight(), false, true);
             resultImage.setImage(image);
             mainImage.setVisible(false);
             resultImage.setVisible(true);
-        }
-    }
-
-    private void delayProgram(int seconds) {
-        Thread thread = new Thread();
-        try {
-            thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
@@ -98,7 +122,10 @@ public class RegisterController {
     public void cancel() {
         loginStage.show();
 
-        //incorrectLogin.setVisibility(false);
+        //Hide incorrect login text if it exists. Otherwise it is not visible!
+        if (incorrectLoginClone != null) {
+            incorrectLoginClone.setVisible(false);
+        }
         registerStage.close();
     }
 
@@ -140,4 +167,26 @@ public class RegisterController {
         return false;
     }
 }
+
+//            mainImage.setImage(resultImage.getImage());
+//            mainImage.setImage(null);
+
+//            PauseTransition pause = new PauseTransition(Duration.INDEFINITE);
+//            pause.setOnFinished(
+//                    e -> {
+//                        resultImage.setVisible(true);
+//                        mainImage.setVisible(false);
+//                        pause.playFromStart(); // loop again
+//                    });
+//            pause.play();
+//        for(Instant i = start; i.compareTo(end); i.plusSeconds(1)){
+//
+//        }
+//        time.atOffset(ZoneOffset.ofTotalSeconds(5));
+
+//            resultImage = new ImageView();
+
+//            mainImage = new ImageView();
+//            mainImage.setImage(image);
+//            mainImage.setVisible(true);
 

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.Scanner;
@@ -17,6 +18,7 @@ public class Main extends Application {
         Parent loginRoot = FXMLLoader.load(getClass().getResource("loginWindow.fxml"));
         loginStage = primaryStage;
         loginStage.setTitle("Login Window");
+        loginStage.getIcons().add(new Image("/pictures/cat.jpg"));
         loginStage.setScene(new Scene(loginRoot, 600, 400));
         loginStage.setResizable(false);
         loginStage.show();

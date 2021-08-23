@@ -173,7 +173,7 @@ public class DBConnector {
      * Register account / add to DB user and have them to login after registering
      * - gets valid input everytime! The tests are done before the data gets sent.
      */
-    protected static void registerUser(String... str) {
+    protected static void registerUser(boolean isAdmin, String... str) {
         if (hasConnected) {
             if (tableName == null) {
                 setTableName();
@@ -198,8 +198,11 @@ public class DBConnector {
                 preparedStatement.setString(2, last_name); //last_name
                 preparedStatement.setString(3, username); //username
                 preparedStatement.setString(4, password); //password
-                preparedStatement.setString(5, "no"); //admin //checkbox
-
+                if(isAdmin){ //toggleButton
+                    preparedStatement.setString(5, "yes"); //admin
+                }else {
+                    preparedStatement.setString(5, "no"); //admin
+                }
                 preparedStatement.execute();
                 accounts.put(str[2], str[3]);
                 System.out.println("User Registered Successfully!");
@@ -208,7 +211,7 @@ public class DBConnector {
             }
         } else {
             connect();
-            registerUser(str);
+            registerUser(isAdmin, str);
         }
     }
 

@@ -9,6 +9,10 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -33,6 +37,7 @@ public class LoginController implements Initializable {
     @FXML
     private Hyperlink hyperlink;
 
+    public static Text incorrectLoginClone;
     public static Stage registerStage;
     /**
      * Actions
@@ -55,12 +60,13 @@ public class LoginController implements Initializable {
     private void createRegisterWindow() {
         Parent registerRoot = null;
         try {
-            registerRoot = FXMLLoader.load(getClass().getResource("registerWindow.fxml"));
+            registerRoot = FXMLLoader.load(getClass().getResource("registerWindowV2.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         registerStage = new Stage();
         registerStage.setTitle("Register Window");
+        registerStage.getIcons().add(new Image("/pictures/cat.jpg"));
         registerStage.setScene(new Scene(registerRoot, 400, 600));
         registerStage.show();
         registerStage.setResizable(false);
@@ -77,7 +83,8 @@ public class LoginController implements Initializable {
             loginStage.close();
             //open the main program...
         } else {
-            incorrectLogin.setVisible(true);
+            incorrectLoginClone = incorrectLogin;
+            incorrectLoginClone.setVisible(true);
             System.out.println("Incorrect account. Try again.");
         }
     }
@@ -101,6 +108,5 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
-
 }
 
